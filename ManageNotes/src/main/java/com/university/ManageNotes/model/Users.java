@@ -1,10 +1,7 @@
 package com.university.ManageNotes.model;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
@@ -31,16 +28,14 @@ public class Users extends AbstractEntity {
     @Column(name = "password")
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
 
     @Column(name = "active")
     private boolean active;
 
-    @OneToMany(mappedBy = "student")
-    private List<Grades> gradesReceived;
-
     @OneToMany(mappedBy = "enteredBy")
-    private List<Grades>gradesEntered;
+    private List<Grades> gradesEntered;
 
 }
