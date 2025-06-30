@@ -38,4 +38,7 @@ public class UserRequest {
 
     private Boolean active = true;
 
+    private String password;
+
+
 }
