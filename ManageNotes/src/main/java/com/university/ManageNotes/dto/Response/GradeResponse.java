@@ -14,7 +14,7 @@ import lombok.Setter;
 
 public class GradeResponse extends AbstractEntity {
 
-    private Long id;
+
     private Long studentId;
     private String studentName;
     private Long subjectId;

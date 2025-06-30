@@ -54,10 +54,10 @@ public class GradeController {
     public ResponseEntity<MessageResponse> deleteGrade(@PathVariable Long gradeId) {
         try {
             gradeService.deleteGrade(gradeId);
-            return ResponseEntity.ok(new MessageResponse("Grade deleted successfully"));
+            return ResponseEntity.ok(new MessageResponse("Grade deleted successfully", "SUCCESS", null));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error deleting grade: " + e.getMessage()));
+                    .body(new MessageResponse("Error deleting grade: " + e.getMessage(), "ERROR", null));
         }
     }
 
