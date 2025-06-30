@@ -57,7 +57,7 @@ public class AdminController {
         try {
             if (userRepository.existsByEmail(userRequest.getEmail())) {
                 return ResponseEntity.badRequest()
-                        .body(new MessageResponse("Error: Email is already in use!"));
+                        .body(new MessageResponse("Error: Email is already in use!", "ERROR", null));
             }
 
             Users user = new Users();
@@ -69,10 +69,10 @@ public class AdminController {
             user.setActive(true);
 
             userRepository.save(user);
-            return ResponseEntity.ok(new MessageResponse("User created successfully!"));
+            return ResponseEntity.ok(new MessageResponse("User created successfully!", "SUCCESS",null));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error creating user: " + e.getMessage()));
+                    .body(new MessageResponse("Error creating user: " + e.getMessage(), "ERROR", null));
         }
     }
 
@@ -93,7 +93,7 @@ public class AdminController {
             if (!user.getEmail().equals(userRequest.getEmail())) {
                 if (userRepository.existsByEmail(userRequest.getEmail())) {
                     return ResponseEntity.badRequest()
-                            .body(new MessageResponse("Error: Email is already in use!"));
+                            .body(new MessageResponse("Error: Email is already in use!", "ERROR", null));
                 }
                 user.setEmail(userRequest.getEmail());
             }
@@ -104,10 +104,10 @@ public class AdminController {
             }
 
             userRepository.save(user);
-            return ResponseEntity.ok(new MessageResponse("User updated successfully!"));
+            return ResponseEntity.ok(new MessageResponse("User updated successfully!","SUCCESS",null));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error updating user: " + e.getMessage()));
+                    .body(new MessageResponse("Error updating user: " + e.getMessage(), "ERROR", null));
         }
     }
 
@@ -118,10 +118,11 @@ public class AdminController {
             Users user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
             userRepository.delete(user);
-            return ResponseEntity.ok(new MessageResponse("User deleted successfully!"));
+            return ResponseEntity.ok(new MessageResponse("deleting user succsefully","SUCCESS",null
+            ));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error deleting user: " + e.getMessage()));
+                    .body(new MessageResponse("Error deleting user: " + e.getMessage() , "ERROR", null));
         }
     }
 
@@ -138,10 +139,10 @@ public class AdminController {
     public ResponseEntity<MessageResponse> createStudent(@Valid @RequestBody Students student) {
         try {
             studentService.createStudent(student);
-            return ResponseEntity.ok(new MessageResponse("Student created successfully!"));
+            return ResponseEntity.ok(new MessageResponse("Student created successfully!", "SUCCESS", null));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error creating student: " + e.getMessage()));
+                    .body(new MessageResponse("Error creating student: " + e.getMessage(), "ERROR", null));
         }
     }
 
@@ -151,10 +152,10 @@ public class AdminController {
                                                          @Valid @RequestBody Students studentDetails) {
         try {
             studentService.updateStudent(studentId, studentDetails);
-            return ResponseEntity.ok(new MessageResponse("Student updated successfully!"));
+            return ResponseEntity.ok(new MessageResponse("Student updated successfully!", "SUCCESS", null));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error updating student: " + e.getMessage()));
+                    .body(new MessageResponse("Error updating student: " + e.getMessage(), "ERRRR", null));
         }
     }
 
@@ -163,10 +164,11 @@ public class AdminController {
     public ResponseEntity<MessageResponse> deleteStudent(@PathVariable Long studentId) {
         try {
             studentService.deleteStudent(studentId);
-            return ResponseEntity.ok(new MessageResponse("Student deleted successfully!"));
+            return ResponseEntity.ok(new MessageResponse("Student deleted successfully!", "SUCCESS", null
+            ));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error deleting student: " + e.getMessage()));
+                    .body(new MessageResponse("Error deleting student: " + e.getMessage(), "ERROR", null));
         }
     }
 
@@ -183,10 +185,10 @@ public class AdminController {
     public ResponseEntity<MessageResponse> createSubject(@Valid @RequestBody Subject subject) {
         try {
             subjectService.createSubject(subject);
-            return ResponseEntity.ok(new MessageResponse("Subject created successfully!"));
+            return ResponseEntity.ok(new MessageResponse("Subject created successfully!", "SUCCESS", null));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error creating subject: " + e.getMessage()));
+                    .body(new MessageResponse("Error creating subject: " + e.getMessage(), "ERROR", null));
         }
     }
 
@@ -196,10 +198,10 @@ public class AdminController {
                                                          @Valid @RequestBody Subject subjectDetails) {
         try {
             subjectService.updateSubject(subjectId, subjectDetails);
-            return ResponseEntity.ok(new MessageResponse("Subject updated successfully!"));
+            return ResponseEntity.ok(new MessageResponse("Subject updated successfully!", "SUCCESS", null));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error updating subject: " + e.getMessage()));
+                    .body(new MessageResponse("Error updating subject: " + e.getMessage(), "ERROR", null));
         }
     }
 
@@ -208,10 +210,10 @@ public class AdminController {
     public ResponseEntity<MessageResponse> deleteSubject(@PathVariable Long subjectId) {
         try {
             subjectService.deleteSubject(subjectId);
-            return ResponseEntity.ok(new MessageResponse("Subject deleted successfully!"));
+            return ResponseEntity.ok(new MessageResponse("Subject deleted successfully!", "SUCCESS",null));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error deleting subject: " + e.getMessage()));
+                    .body(new MessageResponse("Error deleting subject: " + e.getMessage(), "ERROR", null));
         }
     }
 
@@ -229,13 +231,14 @@ public class AdminController {
         try {
             if (semesterRepository.existsByName(semester.getName())) {
                 return ResponseEntity.badRequest()
-                        .body(new MessageResponse("Error: Semester name already exists!"));
+                        .body(new MessageResponse("Error: Semester name already exists!", "ERROR", null));
             }
             semesterRepository.save(semester);
-            return ResponseEntity.ok(new MessageResponse("Semester created successfully!"));
+            return ResponseEntity.ok(new MessageResponse("Semester created successfully!", "SUCCESS", null
+            ));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error creating semester: " + e.getMessage()));
+                    .body(new MessageResponse("Error creating semester: " + e.getMessage(), "ERROR", null));
         }
     }
 
@@ -253,10 +256,10 @@ public class AdminController {
             semester.setActive(semesterDetails.getActive());
 
             semesterRepository.save(semester);
-            return ResponseEntity.ok(new MessageResponse("Semester updated successfully!"));
+            return ResponseEntity.ok(new MessageResponse("Semester updated successfully!", "SUCCESS", null));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error updating semester: " + e.getMessage()));
+                    .body(new MessageResponse("Error updating semester: " + e.getMessage(),"ERROR",null));
         }
     }
 
@@ -267,10 +270,10 @@ public class AdminController {
             Semesters semester = semesterRepository.findById(semesterId)
                     .orElseThrow(() -> new RuntimeException("Semester not found"));
             semesterRepository.delete(semester);
-            return ResponseEntity.ok(new MessageResponse("Semester deleted successfully!"));
+            return ResponseEntity.ok(new MessageResponse("Semester deleted successfully!", "SUCCESS",null));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error deleting semester: " + e.getMessage()));
+                    .body(new MessageResponse("Error deleting semester: " + e.getMessage(),"ERROR", null));
         }
     }
 }
