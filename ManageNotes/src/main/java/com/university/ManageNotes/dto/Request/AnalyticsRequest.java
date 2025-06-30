@@ -20,3 +20,4 @@ public class AnalyticsRequest extends AbstractEntity {
     private String metricType;
 
 }
+

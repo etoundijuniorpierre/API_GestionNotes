@@ -27,7 +27,4 @@ public class BulkReportRequest {
     private Boolean includeComments = true;
     private List<String> recipientEmails; // For bulk email delivery
 
-
-
-
 }

@@ -1,18 +1,17 @@
 package com.university.ManageNotes.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
+import java.util.List;
+
+@Getter
 @Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class Students extends  AbstractEntity{
+public class Students extends AbstractEntity {
 
     @Column(name = "firstName")
     private String firstName;
@@ -20,12 +19,15 @@ public class Students extends  AbstractEntity{
     @Column(name = "lastName")
     private String lastName;
 
+    @Column(name = "studentNumber", unique = true)
+    private String studentNumber;
+
     @Column(name = "level")
-    private  String level;
+    private String level;
 
-    @Column(name = "idSemester")
-    private Long idSemester;
+    @Column(name = "email")
+    private String email;
 
-    @Column(name = "idSubject")
-    private  Long idSubject;
+    @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
+    private List<Grades> grades;
 }

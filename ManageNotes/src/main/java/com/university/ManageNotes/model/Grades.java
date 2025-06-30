@@ -1,16 +1,13 @@
 package com.university.ManageNotes.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.security.auth.Subject;
-
+@Getter
 @Setter
 @Entity
 @AllArgsConstructor
@@ -29,9 +26,10 @@ public class Grades extends AbstractEntity{
 
  @ManyToOne
  @JoinColumn(name = "idStudents")
- private  Students students;
+ private Students student;
 
- @Column(name = "subject")
+ @ManyToOne
+ @JoinColumn(name = "idSubject")
  private Subject subject;
 
  @ManyToOne
@@ -42,6 +40,7 @@ public class Grades extends AbstractEntity{
  @JoinColumn(name = "idSemester")
  private   Semesters semesters;
 
+ @Enumerated(EnumType.STRING)
  @Column(name = "gradeType")
  private GradeType gradeType;
 }

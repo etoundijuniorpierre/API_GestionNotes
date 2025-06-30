@@ -1,8 +1,7 @@
 package com.university.ManageNotes.model;
 
 public enum GradeType {
-    ASSINGMENT,
-
+    ASSIGNMENT,
     EXAM,
     QUIZ,
     PROJECT
