@@ -196,7 +196,7 @@ public class GradeService {
         response.setCoefficient(grade.getCoefficient());
         response.setGradeType(grade.getGradeType());
         response.setComments(grade.getComments());
-        response.setEnteredBy(grade.getEnteredBy().getFirstName() + " " + grade.getEnteredBy().getLastName());
+        response.setEnteredByName(grade.getEnteredBy().getFirstName() + " " + grade.getEnteredBy().getLastName());
         response.setCreatedDate(grade.getCreatedDate());
         return response;
     }

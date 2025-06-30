@@ -53,7 +53,7 @@ public class AuthService {
 
     public MessageResponse registerUser(SignupRequest signUpRequest) {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return new MessageResponse("Error: Email is already in use!");
+            return new MessageResponse("Error: Email is already in use!", "ERROR", null);
         }
 
         // Create new user account
