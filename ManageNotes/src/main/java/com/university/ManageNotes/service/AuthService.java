@@ -62,13 +62,19 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
 
-        Users userDetails = (Users) authentication.getPrincipal();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return new JwtResponse(jwt,
-                "Bearer",
-                userDetails.getUsername(),
-                userDetails.getEmail(),
-                userDetails.getRole());
+        if (principal instanceof UserDetails) {
+            String username = ((UserDetails) principal).getUsername();
+            Users userDetails = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+            return new JwtResponse(jwt,
+                    "Bearer",
+                    userDetails.getUsername(),
+                    userDetails.getEmail(),
+                    userDetails.getRole());
+        } else {
+            throw new RuntimeException("Error: User not authenticated.");
+        }
     }
 
     public MessageResponse changePassword(String username, String oldPassword, String newPassword) {

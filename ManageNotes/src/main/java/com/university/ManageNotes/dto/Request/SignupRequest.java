@@ -22,7 +22,7 @@ public class SignupRequest {
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 6, max = 100, message = "Password must be between 6 and 100 characters")
+    @Size(min = 5, max = 100, message = "Password must be between 5 and 100 characters")
     private String password;
 
     @NotBlank(message = "First name is required")
@@ -38,7 +38,4 @@ public class SignupRequest {
 
     @NotNull(message = "Role is required")
     private Role role;
-
-
-
 }
