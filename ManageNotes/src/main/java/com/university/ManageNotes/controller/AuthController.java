@@ -5,10 +5,12 @@ import com.university.ManageNotes.dto.Request.SignupRequest;
 import com.university.ManageNotes.dto.Request.PasswordChangeRequest;
 import com.university.ManageNotes.dto.Response.JwtResponse;
 import com.university.ManageNotes.dto.Response.MessageResponse;
+import com.university.ManageNotes.security.UserPrincipal;
 import com.university.ManageNotes.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -41,11 +43,11 @@ public class AuthController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(@Valid @RequestBody PasswordChangeRequest passwordChangeRequest) {
+    public ResponseEntity<?> changePassword(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @RequestBody PasswordChangeRequest passwordChangeRequest) {
         try {
             // Implementation would get current user from security context
             MessageResponse response = authService.changePassword(
-                    "currentUser", // This would be retrieved from authentication context
+                    userPrincipal.getUsername(), // This would be retrieved from authentication context
                     passwordChangeRequest.getOldPassword(),
                     passwordChangeRequest.getNewPassword()
             );

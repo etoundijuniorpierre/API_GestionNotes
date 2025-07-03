@@ -36,7 +36,15 @@ public class GradeService {
 
     public MessageResponse addGrade(GradeRequest gradeRequest) {
         try {
-            // Add grade logic here
+            Grades grade = new Grades();
+            grade.setStudent(studentRepository.findById(gradeRequest.getStudentId()).orElseThrow(() -> new RuntimeException("Student not found")));
+            grade.setSubject(subjectRepository.findById(gradeRequest.getSubjectId()).orElseThrow(() -> new RuntimeException("Subject not found")));
+            grade.setValue(gradeRequest.getValue());
+            grade.setCoefficient(gradeRequest.getCoefficient());
+            grade.setType(gradeRequest.getType());
+            grade.setComments(gradeRequest.getComments());
+            grade.setEnteredBy(userRepository.findById(gradeRequest.getEnteredBy()).orElseThrow(() -> new RuntimeException("User not found")));
+            gradeRepository.save(grade);
             return MessageResponse.success("Grade added successfully!");
         } catch (Exception e) {
             return MessageResponse.error("Failed to add grade: " + e.getMessage());
@@ -44,12 +52,24 @@ public class GradeService {
     }
 
     public GradeResponse updateGrade(Long gradeId, GradeUpdateRequest gradeRequest) {
-        try {
-            // Update grade logic here
-            return new GradeResponse();
-        } catch (Exception e) {
-            return null;
+        Grades grade = gradeRepository.findById(gradeId)
+                .orElseThrow(() -> new RuntimeException("Grade not found"));
+
+        if (gradeRequest.getValue() != null) {
+            grade.setValue(gradeRequest.getValue());
         }
+        if (gradeRequest.getCoefficient() != null) {
+            grade.setCoefficient(gradeRequest.getCoefficient());
+        }
+        if (gradeRequest.getComments() != null) {
+            grade.setComments(gradeRequest.getComments());
+        }
+        if (gradeRequest.getType() != null) {
+            grade.setType(gradeRequest.getType());
+        }
+
+        Grades updatedGrade = gradeRepository.save(grade);
+        return convertToResponse(updatedGrade);
     }
 
     public MessageResponse deleteGrade(Long gradeId) {

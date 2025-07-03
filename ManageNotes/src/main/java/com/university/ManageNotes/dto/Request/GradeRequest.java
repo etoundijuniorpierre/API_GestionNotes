@@ -38,9 +38,10 @@ public class GradeRequest {
     @NotNull(message = "Grade type is required")
     private GradeType type;
 
+    @NotNull(message = "Entered by user ID is required")
+    private Long enteredBy;
+
     @Size(max = 500, message = "Comments must not exceed 500 characters")
     private String comments;
-
-
 
 }
