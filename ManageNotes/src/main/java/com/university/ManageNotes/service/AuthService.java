@@ -48,7 +48,7 @@ public class AuthService {
                 .toList();
 
         return new JwtResponse(jwt, userDetails.getId(), userDetails.getEmail(),
-                              userDetails.getFirstName(), userDetails.getLastName(), roles);
+                              userDetails.getFirstName(), userDetails.getLastName(), userDetails.getAuthorities(),userDetails.getUsername());
     }
 
     public MessageResponse registerUser(SignupRequest signUpRequest) {
@@ -70,7 +70,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        return new MessageResponse("User registered successfully!");
+        return new MessageResponse("User registered successfully!", "SUCCESS", null);
     }
 
     public Users getCurrentUser() {
