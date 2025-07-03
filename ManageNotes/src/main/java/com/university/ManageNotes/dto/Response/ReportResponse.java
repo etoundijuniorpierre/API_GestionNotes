@@ -24,5 +24,36 @@ public class ReportResponse extends AbstractEntity {
     private String generatedByName;
     private String downloadUrl;
 
+    // Additional fields for different report types
+    private String reportType;
+    private Long classId;
+    private String className;
+    private Long subjectId;
+    private String subjectName;
+    private Boolean success;
+    private String message;
 
+    public void setReportType(String reportType) {
+        this.reportType = reportType;
+    }
+
+    public void setStudentId(Long studentId) {
+        this.studentId = studentId;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setClassId(Long classId) {
+        this.classId = classId;
+    }
+
+    public void setSubjectId(Long subjectId) {
+        this.subjectId = subjectId;
+    }
 }

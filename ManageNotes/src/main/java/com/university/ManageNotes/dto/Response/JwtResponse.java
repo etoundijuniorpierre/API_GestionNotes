@@ -25,5 +25,13 @@ public class JwtResponse {
     private Role role;
     private List<String> authorities;
 
+    // Additional constructor for convenience
+    public JwtResponse(String token, String type, String username, String email, Role role) {
+        this.token = token;
+        this.type = type;
+        this.username = username;
+        this.email = email;
+        this.role = role;
+    }
 
 }

@@ -1,14 +1,10 @@
 package com.university.ManageNotes.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
 @Setter
+@Getter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -38,9 +34,55 @@ public class Grades extends AbstractEntity{
 
  @ManyToOne
  @JoinColumn(name = "idSemester")
- private   Semesters semesters;
+ private Semesters semester;
 
  @Enumerated(EnumType.STRING)
  @Column(name = "gradeType")
- private GradeType gradeType;
+ private GradeType type;
+
+ // Backward compatibility methods
+ public GradeType getGradeType() {
+  return this.type;
+ }
+
+ public void setGradeType(GradeType gradeType) {
+  this.type = gradeType;
+ }
+
+ public Semesters getSemesters() {
+  return this.semester;
+ }
+
+ public void setSemesters(Semesters semesters) {
+  this.semester = semesters;
+ }
+
+
+ public Students getStudent() {
+  return student;
+ }
+
+ public Subject getSubject() {
+  return subject;
+ }
+
+ public Double getValue() {
+  return value;
+ }
+
+ public Double getCoefficient() {
+  return coefficient;
+ }
+
+ public String getComments() {
+  return comments;
+ }
+
+ public Users getEnteredBy() {
+  return enteredBy;
+ }
+
+ public GradeType getType() {
+  return type;
+ }
 }

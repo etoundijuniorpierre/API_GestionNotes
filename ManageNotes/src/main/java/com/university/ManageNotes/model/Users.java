@@ -1,21 +1,20 @@
 package com.university.ManageNotes.model;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true )
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "Users")
-
 public class Users extends AbstractEntity {
-    //private String username;
+    @Column(name = "username", unique = true)
+    private String username;
+
     @Column(name = "firstName")
     private String firstName;
 
@@ -25,6 +24,9 @@ public class Users extends AbstractEntity {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "phone")
+    private String phone;
+
     @Column(name = "password")
     private String password;
 
@@ -33,9 +35,8 @@ public class Users extends AbstractEntity {
     private Role role;
 
     @Column(name = "active")
-    private boolean active;
+    private Boolean active;
 
     @OneToMany(mappedBy = "enteredBy")
     private List<Grades> gradesEntered;
-
 }

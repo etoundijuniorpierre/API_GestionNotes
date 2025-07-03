@@ -26,7 +26,10 @@ public class Semesters extends AbstractEntity {
     @Column(name = "active")
     private Boolean active;
 
-    @OneToMany(mappedBy = "semesters", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "semester", fetch = FetchType.LAZY)
     private List<Grades> grades;
 
+    public String getName() {
+        return name;
+    }
 }

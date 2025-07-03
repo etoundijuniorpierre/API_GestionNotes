@@ -2,17 +2,12 @@ package com.university.ManageNotes.dto.Request;
 
 import com.university.ManageNotes.model.Role;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
 public class UserRequest {
-
 
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 50)
@@ -40,5 +35,35 @@ public class UserRequest {
 
     private String password;
 
+    public String getPassword() {
+        return password;
+    }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
 }

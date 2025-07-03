@@ -11,15 +11,17 @@ import java.util.Objects;
 
 public class UserPrincipal implements UserDetails {
     private Long id;
+    private String username;
     private String firstName;
     private String lastName;
     private String email;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(Long id, String firstName, String lastName, String email, String password,
-                        Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(Long id, String username, String firstName, String lastName, String email, String password,
+                         Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
+        this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -34,6 +36,7 @@ public class UserPrincipal implements UserDetails {
 
         return new UserPrincipal(
                 user.getId(),
+                user.getUsername(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
@@ -60,7 +63,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     @Override
