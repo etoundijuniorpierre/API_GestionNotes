@@ -19,7 +19,7 @@ public interface UserMapper {
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
     @Mapping(target = "phone", source = "phone")
-    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "role", source = "role")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "gradesEntered", ignore = true)

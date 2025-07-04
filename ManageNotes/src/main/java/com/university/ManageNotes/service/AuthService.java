@@ -50,9 +50,13 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
         user.setActive(true);
 
-        userRepository.save(user);
+        Users saved = userRepository.save(user);
 
-        return MessageResponse.success("User registered successfully!");
+        return new MessageResponse(
+                "User registered successfully!",
+                "SUCCESS",
+                userMapper.toUserResponse(saved)
+        );
     }
 
     public JwtResponse authenticateUser(LoginRequest loginRequest) {

@@ -30,8 +30,9 @@ public class UserPrincipal implements UserDetails {
     }
 
     public static UserPrincipal create(Users user) {
+        String roleName = user.getRole() != null ? user.getRole().name() : "STUDENT";
         List<GrantedAuthority> authorities = List.of(
-                new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+                new SimpleGrantedAuthority("ROLE_" + roleName)
         );
 
         return new UserPrincipal(
