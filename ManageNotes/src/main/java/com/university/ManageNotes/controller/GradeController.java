@@ -27,25 +27,25 @@ public class GradeController {
 
     @PostMapping
     @Operation(summary = "Create new grade", description = "Create a new grade entry (Teacher/Admin only)")
-    public ResponseEntity<GradeResponse> createGrade(@Valid @RequestBody GradeRequest gradeRequest) {
+    public ResponseEntity<?> createGrade(@Valid @RequestBody GradeRequest gradeRequest) {
         try {
             GradeResponse response = gradeService.createGrade(gradeRequest);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(new MessageResponse("Error creating grade: " + e.getMessage(), "ERROR"));
         }
     }
 
     @PutMapping("/{gradeId}")
     @Operation(summary = "Update grade", description = "Update an existing grade (Teacher/Admin only)")
-    public ResponseEntity<GradeResponse> updateGrade(
+    public ResponseEntity<?> updateGrade(
             @PathVariable Long gradeId,
             @Valid @RequestBody GradeUpdateRequest updateRequest) {
         try {
             GradeResponse response = gradeService.updateGrade(gradeId, updateRequest);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(new MessageResponse("Error updating grade: " + e.getMessage(), "ERROR"));
         }
     }
 
@@ -63,25 +63,25 @@ public class GradeController {
 
     @GetMapping("/student/{studentId}")
     @Operation(summary = "Get student grades", description = "Get all grades for a specific student")
-    public ResponseEntity<StudentGradesResponse> getStudentGrades(
+    public ResponseEntity<?> getStudentGrades(
             @PathVariable Long studentId,
             @RequestParam(required = false) Long semesterId) {
         try {
             StudentGradesResponse response = gradeService.getStudentGrades(studentId, semesterId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(new MessageResponse("Error fetching grades: " + e.getMessage(), "ERROR"));
         }
     }
 
     @GetMapping("/teacher/my-grades")
     @Operation(summary = "Get teacher's grades", description = "Get all grades entered by current teacher")
-    public ResponseEntity<List<GradeResponse>> getTeacherGrades() {
+    public ResponseEntity<?> getTeacherGrades() {
         try {
             List<GradeResponse> response = gradeService.getTeacherGrades();
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(new MessageResponse("Error fetching grades: " + e.getMessage(), "ERROR"));
         }
     }
 }

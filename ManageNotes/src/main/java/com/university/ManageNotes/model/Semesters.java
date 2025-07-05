@@ -2,6 +2,7 @@ package com.university.ManageNotes.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,6 +27,7 @@ public class Semesters extends AbstractEntity {
     @Column(name = "active")
     private Boolean active;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "semester", fetch = FetchType.LAZY)
     private List<Grades> grades;
 
