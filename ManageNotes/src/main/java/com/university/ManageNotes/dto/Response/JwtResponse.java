@@ -11,6 +11,7 @@ import java.util.List;
 @Setter
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 
 public class JwtResponse {
     private String token;
@@ -26,12 +27,15 @@ public class JwtResponse {
     private List<String> authorities;
 
     // Additional constructor for convenience
-    public JwtResponse(String token, String type, String username, String email, Role role) {
-        this.token = token;
-        this.type = type;
-        this.username = username;
-        this.email = email;
-        this.role = role;
-    }
+//    public JwtResponse(String token, String type, String username, String email, Role role) {
+//        this.token = token;
+//        this.type = type;
+//        this.username = username;
+//        this.email = email;
+//        this.role = role;
+//    }
 
+//    public JwtResponse() {
+//
+//    }
 }

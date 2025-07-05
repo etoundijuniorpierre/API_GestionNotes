@@ -11,6 +11,9 @@ import com.university.ManageNotes.repository.UserRepository;
 import com.university.ManageNotes.repository.StudentRepository;
 import com.university.ManageNotes.model.Students;
 import com.university.ManageNotes.security.JwtUtils;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +25,8 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
+@NoArgsConstructor
 public class AuthService {
 
     @Autowired
