@@ -4,6 +4,8 @@ import com.university.ManageNotes.dto.Request.SubjectRequest;
 import com.university.ManageNotes.dto.Response.MessageResponse;
 import com.university.ManageNotes.dto.Response.SubjectResponse;
 import com.university.ManageNotes.model.Subject;
+import com.university.ManageNotes.repository.SubjectRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,24 +13,34 @@ import java.util.List;
 @Service
 public class SubjectService {
 
+    @Autowired
+    private SubjectRepository subjectRepository;
+
     public List<SubjectResponse> getAllSubjects() {
-        // Implementation to get all subjects
-        return List.of(); // Placeholder
+        return subjectRepository.findAllOrderByName().stream()
+                .map(this::convertToResponse)
+                .toList();
     }
 
     public SubjectResponse getSubjectById(Long subjectId) {
-        // Implementation to get subject by ID
-        SubjectResponse response = new SubjectResponse();
-        response.setId(subjectId);
-        response.setName("Mathematics");
-        response.setCode("MATH101");
-        return response;
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new RuntimeException("Subject not found"));
+        return convertToResponse(subject);
     }
 
     public MessageResponse createSubject(SubjectRequest subjectRequest) {
         try {
-            // Implementation to create subject
-            return MessageResponse.success("Subject created successfully");
+            if (subjectRepository.existsByCode(subjectRequest.getCode())) {
+                return MessageResponse.error("Subject code already exists");
+            }
+            Subject subject = new Subject();
+            subject.setName(subjectRequest.getName());
+            subject.setCode(subjectRequest.getCode());
+            subject.setCredits(java.math.BigDecimal.valueOf(subjectRequest.getCredits()));
+            subject.setCoefficient(java.math.BigDecimal.valueOf(subjectRequest.getCoefficient()));
+            subject.setIdTeacher(subjectRequest.getTeacherId());
+            subjectRepository.save(subject);
+            return new com.university.ManageNotes.dto.Response.MessageResponse("Subject created successfully","SUCCESS",convertToResponse(subject));
         } catch (Exception e) {
             return MessageResponse.error("Failed to create subject: " + e.getMessage());
         }
@@ -36,8 +48,18 @@ public class SubjectService {
 
     public MessageResponse updateSubject(Long subjectId, SubjectRequest subjectRequest) {
         try {
-            // Implementation to update subject
-            return MessageResponse.success("Subject updated successfully");
+            Subject subject = subjectRepository.findById(subjectId)
+                    .orElseThrow(() -> new RuntimeException("Subject not found"));
+            if (!subject.getCode().equals(subjectRequest.getCode()) && subjectRepository.existsByCode(subjectRequest.getCode())) {
+                return MessageResponse.error("Subject code already exists");
+            }
+            subject.setName(subjectRequest.getName());
+            subject.setCode(subjectRequest.getCode());
+            subject.setCredits(java.math.BigDecimal.valueOf(subjectRequest.getCredits()));
+            subject.setCoefficient(java.math.BigDecimal.valueOf(subjectRequest.getCoefficient()));
+            subject.setIdTeacher(subjectRequest.getTeacherId());
+            subjectRepository.save(subject);
+            return new com.university.ManageNotes.dto.Response.MessageResponse("Subject updated successfully","SUCCESS",convertToResponse(subject));
         } catch (Exception e) {
             return MessageResponse.error("Failed to update subject: " + e.getMessage());
         }
@@ -45,7 +67,10 @@ public class SubjectService {
 
     public MessageResponse deleteSubject(Long subjectId) {
         try {
-            // Implementation to delete subject
+            if (!subjectRepository.existsById(subjectId)) {
+                return MessageResponse.error("Subject not found");
+            }
+            subjectRepository.deleteById(subjectId);
             return MessageResponse.success("Subject deleted successfully");
         } catch (Exception e) {
             return MessageResponse.error("Failed to delete subject: " + e.getMessage());

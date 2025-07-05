@@ -5,14 +5,22 @@ import com.university.ManageNotes.dto.Response.ReportResponse;
 import com.university.ManageNotes.model.Grades;
 import com.university.ManageNotes.model.Students;
 import com.university.ManageNotes.model.Users;
+import com.university.ManageNotes.model.ReportRecord;
+import com.university.ManageNotes.repository.*;
+import com.university.ManageNotes.repository.GradeRepository;
+import com.university.ManageNotes.repository.ReportRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.time.Instant;
+import java.nio.file.*;
+import java.time.format.DateTimeFormatter;
 
 @Service
+@Transactional
 public class ReportService {
 
     @Autowired
@@ -20,6 +28,21 @@ public class ReportService {
 
     @Autowired
     private GradeService gradeService;
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    @Autowired
+    private SubjectRepository subjectRepository;
+
+    @Autowired
+    private SemesterRepository semesterRepository;
+
+    @Autowired
+    private GradeRepository gradeRepository;
+
+    @Autowired
+    private ReportRecordRepository reportRecordRepository;
 
     public byte[] generatePDFReport(Students student, List<Grades> grades, String reportTitle) throws IOException {
         try {
@@ -60,17 +83,70 @@ public class ReportService {
     }
 
     public ReportResponse generateStudentReport(Long studentId, ReportRequest reportRequest) {
+        ReportResponse response = new ReportResponse();
         try {
-            // Logic to generate student report
-            ReportResponse response = new ReportResponse();
-            response.setReportType("STUDENT_GRADES");
+            // fetch entities
+            var studentOpt = studentRepository.findById(studentId);
+            var semesterOpt = semesterRepository.findById(reportRequest.getSemesterId());
+            if (studentOpt.isEmpty() || semesterOpt.isEmpty())
+                throw new RuntimeException("Student or Semester not found");
+            var student = studentOpt.get();
+            var semester = semesterOpt.get();
+
+            // fetch grades
+            List<Grades> grades = gradeRepository.findByStudentIdAndSemesterId(studentId, reportRequest.getSemesterId());
+
+            // compute gpa
+            double gpa = 0;
+            if (!grades.isEmpty()) {
+                double total = grades.stream().mapToDouble(g -> g.getValue() * g.getCoefficient()).sum();
+                double coeff = grades.stream().mapToDouble(Grades::getCoefficient).sum();
+                if (coeff > 0) gpa = Math.round((total / coeff) * 100.0) / 100.0;
+            }
+
+            // fill response
             response.setStudentId(studentId);
+            response.setStudentName(student.getFirstName() + " " + student.getLastName());
+            response.setSemesterId(semester.getId());
+            response.setSemesterName(semester.getName());
+            response.setGpa(gpa);
+            response.setStatus(gpa >= 10 ? "PASS" : "FAIL");
+            response.setReportType("STUDENT_GRADES");
+            response.setCreatedDate(Instant.now());
+            Users currentUser = authService.getCurrentUser();
+            response.setGeneratedBy(currentUser.getId());
+            response.setGeneratedByName(currentUser.getFirstName() + " " + currentUser.getLastName());
             response.setSuccess(true);
             response.setMessage("Report generated successfully");
 
+            // generate pdf
+            byte[] pdf = generatePDFReport(student, grades, "Student Report");
+            Path dir = Paths.get("generated-reports");
+            Files.createDirectories(dir);
+            String fileName = "student_" + studentId + "_sem_" + semester.getId() + "_" + Instant.now().toEpochMilli() + ".pdf";
+            Path filePath = dir.resolve(fileName);
+            Files.write(filePath, pdf);
+            response.setPdfPath(filePath.toString());
+            response.setDownloadUrl("/files/" + fileName);
+
+            // persist
+            ReportRecord rec = new ReportRecord();
+            rec.setStudentId(response.getStudentId());
+            rec.setSemesterId(response.getSemesterId());
+            rec.setSubjectId(response.getSubjectId());
+            rec.setClassId(response.getClassId());
+            rec.setReportType(response.getReportType());
+            rec.setGpa(response.getGpa());
+            rec.setStatus(response.getStatus());
+            rec.setPdfPath(response.getPdfPath());
+            rec.setDownloadUrl(response.getDownloadUrl());
+            rec.setGeneratedBy(response.getGeneratedBy());
+            ReportRecord saved = reportRecordRepository.save(rec);
+            reportRecordRepository.flush();
+            response.setId(saved.getId());
+
             return response;
         } catch (Exception e) {
-            ReportResponse response = new ReportResponse();
             response.setSuccess(false);
             response.setMessage("Failed to generate report: " + e.getMessage());
             return response;
@@ -96,17 +172,57 @@ public class ReportService {
     }
 
     public ReportResponse generateSubjectReport(Long subjectId, ReportRequest reportRequest) {
+        ReportResponse response = new ReportResponse();
         try {
-            // Logic to generate subject report
-            ReportResponse response = new ReportResponse();
+            var studentOpt = studentRepository.findById(reportRequest.getStudentId());
+            var semesterOpt = semesterRepository.findById(reportRequest.getSemesterId());
+            var subjectOpt = subjectRepository.findById(subjectId);
+            if (studentOpt.isEmpty() || semesterOpt.isEmpty() || subjectOpt.isEmpty())
+                throw new RuntimeException("Student/Semester/Subject not found");
+            var student = studentOpt.get();
+            var semester = semesterOpt.get();
+            var subject = subjectOpt.get();
+
+            List<Grades> grades = gradeRepository.findByStudentIdAndSubjectId(reportRequest.getStudentId(), subjectId);
+            if (!grades.isEmpty()) {
+                grades = grades.stream().filter(g -> g.getSemesters() != null && g.getSemesters().getId().equals(reportRequest.getSemesterId())).toList();
+            }
+
+            double gpa = 0;
+            if (!grades.isEmpty()) {
+                double total = grades.stream().mapToDouble(g -> g.getValue() * g.getCoefficient()).sum();
+                double coeff = grades.stream().mapToDouble(Grades::getCoefficient).sum();
+                if (coeff > 0) gpa = Math.round((total / coeff) * 100.0) / 100.0;
+            }
+
+            response.setStudentId(student.getId());
+            response.setStudentName(student.getFirstName() + " " + student.getLastName());
+            response.setSemesterId(semester.getId());
+            response.setSemesterName(semester.getName());
+            response.setSubjectId(subject.getId());
+            response.setSubjectName(subject.getName());
+            response.setGpa(gpa);
+            response.setStatus(gpa >= 10 ? "PASS" : "FAIL");
             response.setReportType("SUBJECT_GRADES");
-            response.setSubjectId(subjectId);
+            response.setCreatedDate(Instant.now());
+            Users currentUser = authService.getCurrentUser();
+            response.setGeneratedBy(currentUser.getId());
+            response.setGeneratedByName(currentUser.getFirstName() + " " + currentUser.getLastName());
+
+            // generate pdf
+            byte[] pdf = generatePDFReport(student, grades, "Subject Report");
+            Path dir = Paths.get("generated-reports");
+            Files.createDirectories(dir);
+            String fileName = "student_" + student.getId() + "_subject_" + subjectId + "_" + Instant.now().toEpochMilli() + ".pdf";
+            Path filePath = dir.resolve(fileName);
+            Files.write(filePath, pdf);
+            response.setPdfPath(filePath.toString());
+            response.setDownloadUrl("/files/" + fileName);
+
             response.setSuccess(true);
             response.setMessage("Subject report generated successfully");
-
             return response;
         } catch (Exception e) {
-            ReportResponse response = new ReportResponse();
             response.setSuccess(false);
             response.setMessage("Failed to generate subject report: " + e.getMessage());
             return response;

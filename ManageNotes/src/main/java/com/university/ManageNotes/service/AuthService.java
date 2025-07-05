@@ -8,6 +8,8 @@ import com.university.ManageNotes.model.Role;
 import com.university.ManageNotes.model.Users;
 import com.university.ManageNotes.mapper.UserMapper;
 import com.university.ManageNotes.repository.UserRepository;
+import com.university.ManageNotes.repository.StudentRepository;
+import com.university.ManageNotes.model.Students;
 import com.university.ManageNotes.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -36,6 +39,9 @@ public class AuthService {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private StudentRepository studentRepository;
+
     public MessageResponse registerUser(SignupRequest signupRequest) {
         if (userRepository.existsByUsername(signupRequest.getUsername())) {
             return MessageResponse.error("Error: Username is already taken!");
@@ -51,6 +57,15 @@ public class AuthService {
         user.setActive(true);
 
         Users saved = userRepository.save(user);
+
+        if (saved.getRole() == Role.STUDENT) {
+            Students student = new Students();
+            student.setFirstName(saved.getFirstName());
+            student.setLastName(saved.getLastName());
+            student.setEmail(saved.getEmail());
+            student.setStudentNumber(UUID.randomUUID().toString());
+            studentRepository.save(student);
+        }
 
         return new MessageResponse(
                 "User registered successfully!",
@@ -71,11 +86,18 @@ public class AuthService {
         if (principal instanceof UserDetails) {
             String username = ((UserDetails) principal).getUsername();
             Users userDetails = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-            return new JwtResponse(jwt,
-                    "Bearer",
-                    userDetails.getUsername(),
-                    userDetails.getEmail(),
-                    userDetails.getRole());
+            JwtResponse jwtResponse = new JwtResponse();
+            jwtResponse.setToken(jwt);
+            jwtResponse.setType("Bearer");
+            jwtResponse.setId(userDetails.getId());
+            jwtResponse.setUsername(userDetails.getUsername());
+            jwtResponse.setEmail(userDetails.getEmail());
+            jwtResponse.setFirstName(userDetails.getFirstName());
+            jwtResponse.setLastName(userDetails.getLastName());
+            jwtResponse.setRole(userDetails.getRole());
+            jwtResponse.setAuthorities(authentication.getAuthorities().stream().map(a -> a.getAuthority()).toList());
+            // refreshToken generation can be added later
+            return jwtResponse;
         } else {
             throw new RuntimeException("Error: User not authenticated.");
         }

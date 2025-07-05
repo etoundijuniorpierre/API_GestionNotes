@@ -3,12 +3,24 @@ package com.university.ManageNotes.service;
 import com.university.ManageNotes.dto.Request.UserRequest;
 import com.university.ManageNotes.dto.Response.UserResponse;
 import com.university.ManageNotes.model.Users;
+import com.university.ManageNotes.repository.UserRepository;
+import com.university.ManageNotes.mapper.UserMapper;
+import com.university.ManageNotes.model.Role;
+import com.university.ManageNotes.security.UserPrincipal;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
 @Service
 public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private UserMapper userMapper;
 
     public UserResponse createUser(UserRequest userRequest) {
         try {
@@ -126,5 +138,21 @@ public class UserService {
         response.setRole(user.getRole());
         response.setActive(user.getActive());
         return response;
+    }
+
+    public UserResponse getCurrentUserResponse() {
+        Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new RuntimeException("No authenticated user");
+        }
+        String username = auth.getName();
+        var user = userRepository.findByUsername(username).orElseThrow();
+        return userMapper.toUserResponse(user);
+    }
+
+    public List<UserResponse> getUsersByRole(Role role) {
+        return userRepository.findByRole(role).stream()
+                .map(userMapper::toUserResponse)
+                .toList();
     }
 }

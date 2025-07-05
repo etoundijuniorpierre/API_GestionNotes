@@ -1,6 +1,7 @@
 package com.university.ManageNotes.controller;
 
 import com.university.ManageNotes.dto.Response.MessageResponse;
+import com.university.ManageNotes.dto.Request.SemesterRequest;
 import com.university.ManageNotes.model.Semesters;
 import com.university.ManageNotes.repository.SemesterRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,12 +31,16 @@ public class SemesterController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create a new semester", description = "Admin only")
-    public ResponseEntity<?> createSemester(@Valid @RequestBody Semesters semester) {
-        if (semesterRepository.existsByName(semester.getName())) {
+    public ResponseEntity<?> createSemester(@Valid @RequestBody SemesterRequest request) {
+        if (semesterRepository.existsByName(request.getName())) {
             return ResponseEntity.badRequest()
                     .body(MessageResponse.error("Semester name already exists"));
         }
-        semester.setActive(Boolean.TRUE.equals(semester.getActive()));
+        Semesters semester = new Semesters();
+        semester.setName(request.getName());
+        semester.setStartDate(request.getStartDate());
+        semester.setEndDate(request.getEndDate());
+        semester.setActive(Boolean.TRUE.equals(request.getActive()));
         Semesters saved = semesterRepository.save(semester);
         return ResponseEntity.ok(saved);
     }
