@@ -30,11 +30,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+//        String path = request.getRequestURI();
+//        // Only allow unauthenticated access to the public endpoints
+//        return path.equals("/api/auth/login") ||
+//                path.equals("/api/auth/register") ||
+//                path.equals("/api/auth/logout");
         String path = request.getRequestURI();
-        // Only allow unauthenticated access to the public endpoints
-        return path.equals("/api/auth/login") ||
-                path.equals("/api/auth/register") ||
-                path.equals("/api/auth/logout");
+        return path.startsWith("/api/auth/");
     }
 
     @Override
